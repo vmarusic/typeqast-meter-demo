@@ -1,0 +1,100 @@
+Job interview assignment
+Shopping Basket
+
+
+
+Assignment description:
+
+We want to build a web application that will process data coming from consumption meters.
+The  application should be able to validate and store these meter readings according to some rules described below. Also, the application will provide consumptions for a given period of time so we can connect other systems to generate invoices for the customers from the consumption data.
+					
+				
+Description of functional concepts
+					
+Meter - it’s a device that is measuring the amount of gas or electricity going through a connection within a house. It's just a counter, so it will be a number that is increasing along time, never reset.
+Meter reading - it' s a number that the Meter is showing at a specific date and time.
+Consumption - it's the difference between two given meter readings, usually for two different datetimes. Example: If the meter reading on 01/01/2017 is 120 and the meter reading on 01/02/2017 is 150, then the consumption between 01/01/2017 and 01/02/2017 is 30. This could be KWh, m3 or something else, but the unit of measure is not relevant for this exercise.
+Profile - it's a collection of ratios [0..1] for every calendar month. It represents how the consumption of a given year is distributed among months, so all the ratios for 12 months must sum up 1. 					
+				
+			
+Legacy data format
+					
+Right now there is another application running for this same purpose that the new application will replace. Requirements of data inputs for the new application are defined below and are based on the legacy data formats that the current application is using.	
+There are two sets of data that the application is processing:				
+					
+1. Profiles and Ratios in CSV
+					
+Month,Profile,Ratio					
+JAN,A,0.2				
+JAN,B,0.18				
+FEB,A,0.1				
+FEB,B,0.21					
+…
+Assumptions:
+
+There is no specific order for the rows.
+There is only one value per Month-Ratio combination.
+Input data always contains ratios for 12 months for a given profile (assume no missing data).
+
+Validations rules:
+
+For a given Profile (A or B in the example) the sum of all ratios should be equal to 1.
+If input data is not fulfilling this condition then an error should be raised and data for that profile rejected.
+Duplicate entries should be processed as updates
+					
+				
+						
+2. Meter Readings in CSV
+					
+ConnectionID, Profile, Month, Meter reading					
+0001, A, JAN, 10				
+0004, B, JAN, 8				
+0004, B, FEB, 10				
+0001, A, FEB, 12			
+0001, A, MAR, 18					
+…
+					
+Assumptions:
+
+There is no specific order for the rows.
+Assume data always contains 12 rows per connection, one line per month (no missing data).
+The ConnectionID is unique.
+Data is provided for a single year in a file. 
+					
+Validations rules:
+
+For a given connection, a meter reading for a month should not be lower than the previous one. Example of an invalid case:
+0001,A,JAN,10
+0001,A,FEB,9
+Data about ratios for profiles contained in the file should exist in database. If profiles A and B are mentioned, there should be data in the database for profiles A and B.
+Consumption for a month (the difference between the meter reading of a month minus the previous one) should be consistent with the ratio with a tolerance of a 25%. That means that if the total consumption for a year is for example 240, if ratio for February is 0.2 (meaning 20% of the consumption expected), then allowed values for consumption in February are 36 - 60. Note that these allowed values are for consumption, not for meter readings.
+If there is a validation error for a given connection, the data for that connection should be rejected.
+Duplicate entries should be rejected.
+
+
+
+Tasks to be accomplished for this interview assignment				
+				
+The new application needs a REST API . You should design it in a way that allows the same information to be passed to the application. You can modify the format in any way you find suitable, data does not need to be passed in CSV format, it can be JSON, XML, etc. Provide documentation for this REST API in any format you prefer.
+Create a Spring application that implements the REST API - CRUD operations for ratios and meter readings .
+Implement the validations described above with proper error handling.
+Make a REST interface to retrieve Consumption for a given month (calendar month for single connection).
+Application should have a reasonable code coverage by Unit and Integration tests.
+					
+
+
+Additional pointers:
+
+Make sure the code is written in a maintainable and testable fashion.
+While we are looking for a solution that shows a good understanding of object oriented programming, SOLID principles and displays a working knowledge of test-driven design, please keep things simple. Do not over-engineer anything, make sure your code is manageable and easy to follow. If you think your solution is too short, feel free to add some commentary to justify the decisions you've taken, if possible by quoting books, blog posts or talks that have influenced you in the way you've coded. If you make an assumption or have a dilemma, add a note specifying your reasoning behind it.
+
+Above all, code as if you're coding for yourself.
+
+
+Deliverables:
+
+The solution should be written in Java.
+We’ll need the source code and a Maven or Gradle file to build it. Please provide a readme file with instructions how to perform any further setup your code might need.
+Share your completed application code in a GitHub or Bitbucket repository.
+
+Good luck!
